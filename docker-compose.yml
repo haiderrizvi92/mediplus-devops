@@ -1,0 +1,49 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mediplus-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mediplus-net
+
+  backend:
+    image: mediplus-backend:v3
+    container_name: mediplus-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+     DB_HOST: mediplus-mysql
+     DB_USER: ${MYSQL_USER}
+     DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+     DB_NAME: ${MYSQL_DATABASE}
+     PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - mediplus-net
+
+  frontend:
+    image: mediplus:v1
+    container_name: mediplus-web
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    networks:
+      - mediplus-net
+
+networks:
+  mediplus-net:
+
+volumes:
+  mysql-data:
