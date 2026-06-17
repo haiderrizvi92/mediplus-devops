@@ -29,7 +29,7 @@ console.log('Connected to MySQL');
 });
 
 app.get('/', (req, res) => {
-res.send('MediPlus API Running');
+res.send('MediPlus API Running - CI Test');
 });
 
 app.get('/api/doctors', (req, res) => {
