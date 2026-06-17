@@ -6,20 +6,31 @@ on:
       - main
 
 jobs:
-  build-images:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build Backend Image
         run: |
-          docker build -t mediplus-backend:${{ github.sha }} ./backend
+          docker build -t haiderrizvi92/mediplus-backend:v3 ./backend
+
+      - name: Push Backend Image
+        run: |
+          docker push haiderrizvi92/mediplus-backend:v3
 
       - name: Build Frontend Image
         run: |
-          docker build -t mediplus-frontend:${{ github.sha }} ./frontend
+          docker build -t haiderrizvi92/mediplus:v1 ./frontend
 
-      - name: Success Message
-        run: echo "Docker images built successfully"
+      - name: Push Frontend Image
+        run: |
+          docker push haiderrizvi92/mediplus:v1
